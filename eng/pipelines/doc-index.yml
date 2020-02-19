@@ -7,8 +7,6 @@ resources:
 
 jobs:
   - job: GenerateDocIndex
-    variables:
-      - template: templates/variables/globals.yml
     pool:
       vmImage: windows-2019
     steps:
