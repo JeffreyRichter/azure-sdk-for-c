@@ -9,11 +9,11 @@ jobs:
 
       - pwsh: >-
           python eng/docs/generate_docs.py
-          --TemplateFile="eng/docs/Doxyfile.template"
+          --TemplateFile="eng/docs/api/Doxyfile.template"
           --PackagePath="sdk/$(PackageName)"
           --PackageName="$(PackageName)"
           --PackageVersion="$(PackageVersion)"
-          --AssetsPath="eng/docs/assets"
+          --AssetsPath="eng/docs/api/assets"
           --DoxygenPath="c:\\program files\\doxygen\\bin\\doxygen.exe"
         displayName: Fill in Doxyfile.template
 
