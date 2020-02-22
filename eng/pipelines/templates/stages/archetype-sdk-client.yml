@@ -1,0 +1,30 @@
+parameters:
+  Artifacts: []
+  ServiceDirectory: not-specified
+
+
+stages:
+  - stage: Build
+    job:
+      - template: ../jobs/archetype-sdk-client.yml
+        parameters:
+          ServiceDirectory: ${{ parameters.ServiceDirectory }}
+          Artifacts: ${{ parameters.Artifacts }}
+
+  - stage: Docs
+    job:
+      - template: ../jobs/archetype-sdk-docs.yml
+        parameters:
+          Artifacts: ${{ parameters.Artifacts }}
+          ServiceDirectory: ${{ parameters.ServiceDirectory }}
+
+  - ${{if and(ne(variables['Build.Reason'], 'PullRequest'), eq(variables['System.TeamProject'], 'internal'))}}:
+
+    - template: pipelines/stages/archetype-net-release.yml@azure-sdk-build-tools
+      parameters:
+        ServiceDirectory: ${{parameters.ServiceDirectory}}
+        DependsOn:
+          - Build
+          - Docs
+        Artifacts: ${{parameters.Artifacts}}
+        ArtifactName: packages

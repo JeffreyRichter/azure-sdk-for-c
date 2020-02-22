@@ -1,0 +1,30 @@
+parameters:
+  Artifacts: []
+  PackageName: not-specified
+  ServiceDirectory: not-specified
+  PackageVersion: not-specified
+
+jobs:
+  - job: Generate Docs
+    pool:
+      vmImage: windows-latest
+    steps:
+      - pwsh: >-
+          choco install doxygen.install
+        displayName: Install Doxygen
+
+      - ${{ each artifact in parameters.Artifacts }}:
+        - pwsh: >-
+            python eng/docs/generate_docs.py
+            --TemplateFile="eng/docs/api/Doxyfile.template"
+            --PackagePath="sdk/${{ parameters.ServiceDirectory }}/${{ parameters.PackageName }}"
+            --PackageName="${{ parameters.PackageName }}"
+            --PackageVersion="${{ parameters.PackageVersion }}"
+            --AssetsPath="eng/docs/api/assets"
+            --DoxygenPath="c:\\program files\\doxygen\\bin\\doxygen.exe"
+          displayName: Fill in Doxyfile.template
+
+        - task: PublishPipelineArtifact@1
+          inputs:
+            targetPath: sdk/${{ parameters.ServiceDirectory }}/${{ parameters.PackageName }}/html
+            artifactName: docs/${{ parameters.ServiceDirectory }}/${{ parameters.PackageName }}
